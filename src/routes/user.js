@@ -1,36 +1,50 @@
 const express = require('express');
-const { CatalogItem } = require('../models/catalogItem.schema');
+const { UserModel: User } = require('../models/user.model');
 
 class UserRouter {
     constructor() {
         this.router = express.Router();
-        this.router.post('/signIn', this.signIn);
-        this.router.put('/signOut', this.signOut);
+        this.router.post('/signUp', this.signUp);
+        this.router.put('/signIn', this.signIn);
     }
 
-    async signIn(req, res, next) {
+    async signUp(req, res) {
+        const { username, password } = req.body;
+        const user = new User(username, password);
+
         try {
-            const catalogItem = new CatalogItem(req.body);
-            const savedCatalogItem = await catalogItem.save();
-            res.status(201).json(savedCatalogItem);
+            await user.register();
+            const token = await user.login();
+            res.status(201).send({ token });
         } catch (error) {
-            next(error);
+            console.error(error);
+            res.status(500).send('An error occurred while creating user');
         }
     }
 
-    async signOut(req, res, next) {
+    async signIn(req, res) {
+        const { username, password } = req.body;
+        const user = new User(username, password);
+
         try {
-            const updatedCatalogItem = await CatalogItem.findByIdAndUpdate(
-                req.params.id,
-                req.body,
-                { new: true }
-            );
-            if (!updatedCatalogItem) {
-                return res.sendStatus(404);
-            }
-            res.json(updatedCatalogItem);
+            const token = await user.login();
+            res.status(200).send({ token });
         } catch (error) {
-            next(error);
+            console.error(error);
+            res.status(401).send('Incorrect username or password');
+        }
+    }
+
+    async searchItem(req, res) {
+        const { username, password } = req.body;
+        const user = new User(username, password);
+
+        try {
+            const token = await user.login();
+            res.status(200).send({ token });
+        } catch (error) {
+            console.error(error);
+            res.status(401).send('Incorrect username or password');
         }
     }
 }

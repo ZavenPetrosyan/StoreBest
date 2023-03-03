@@ -1,5 +1,5 @@
 const express = require('express');
-const { CatalogItem } = require('../models/catalogItem.schema');
+const { CatalogItem } = require('../models/schemas/catalogItem.schema');
 
 class CatalogItemRouter {
     constructor() {
