@@ -1,0 +1,25 @@
+{
+  "name": "storebest",
+  "version": "1.0.0",
+  "description": "online store",
+  "main": "main.js",
+  "scripts": {
+    "start": "node mail.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZavenPetrosyan/StoreBest.git"
+  },
+  "author": "Zaven Petrosyan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ZavenPetrosyan/StoreBest/issues"
+  },
+  "homepage": "https://github.com/ZavenPetrosyan/StoreBest#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "mongodb": "^5.1.0",
+    "mongoose": "^7.0.0"
+  }
+}

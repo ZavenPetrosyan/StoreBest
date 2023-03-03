@@ -1,0 +1,9 @@
+{
+    "www": {
+        "port": 9000
+    },
+    "databaseConfig": {
+        "host": "mongodb",
+        "database": "store"
+    }
+}

@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+
+  node:
+    container_name: onlinestore
+    image: onlinestore
+    build:
+      context: .
+      dockerfile: node.dockerfile
+      args:
+        PACKAGES: "nano wget curl"
+    ports:
+      - "9000:3000"
+    networks:
+      - store-network
+    volumes:
+      - ./logs:/var/www/logs
+    environment:
+      - NODE_ENV=production
+      - APP_VERSION=1.0
+    depends_on: 
+      - mongodb
+      
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    networks:
+      - store-network
+
+networks:
+  nodeapp-network:
+    driver: bridge
