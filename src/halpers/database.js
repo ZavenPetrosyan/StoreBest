@@ -8,12 +8,11 @@ class Database {
     init(config) {
         console.log(`Trying to connect to ${config.host}/${config.database} MongoDB database`);
         const options = {
-            promiseLibrary: global.Promise,
             useNewUrlParser: true,
             useUnifiedTopology: true
         };
-
-        const connString = `mongodb://${config.host}/${config.database}`;
+        const connString = 'mongodb://localhost:27017';
+        // const connString = `mongodb://${config.host}/${config.database}`;
         mongoose.connect(connString, options);
         this.connection = mongoose.connection;
         this.connection.on('error', console.error.bind(console, 'connection error:'));

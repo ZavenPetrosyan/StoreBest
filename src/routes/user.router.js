@@ -4,8 +4,7 @@ const { UserModel: User } = require('../models/user.model');
 class UserRouter {
     constructor() {
         this.router = express.Router();
-        this.router.post('/signUp', this.signUp);
-        this.router.put('/signIn', this.signIn);
+        this.initializeRoutes();
     }
 
     async signUp(req, res) {
@@ -46,6 +45,11 @@ class UserRouter {
             console.error(error);
             res.status(401).send('Incorrect username or password');
         }
+    }
+
+    initializeRoutes() {
+        this.router.post('/signUp', this.signUp);
+        this.router.put('/signIn', this.signIn);
     }
 }
 

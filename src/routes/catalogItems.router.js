@@ -1,17 +1,24 @@
 const express = require('express');
-const { CatalogItem } = require('../models/schemas/catalogItem.schema');
+const CatalogItemController = require('../controllers/catalogItem.controller');
 
 class CatalogItemRouter {
     constructor() {
         this.router = express.Router();
-        this.router.post('/', this.addCatalogItem);
-        this.router.put('/:id', this.updateCatalogItem);
-        this.router.delete('/:id', this.deleteCatalogItem);
+        this.initializeRoutes();
+    }
+    
+    async getCatalogItems(req, res, next) {
+        try {
+            const result = await CatalogItemController.listItems()
+            res.status(201).json(result);
+        } catch (error) {
+            next(error);
+        }
     }
 
     async addCatalogItem(req, res, next) {
         try {
-            const catalogItem = new CatalogItem(req.body);
+            const catalogItem = await CatalogItemController.addItem();
             const savedCatalogItem = await catalogItem.save();
             res.status(201).json(savedCatalogItem);
         } catch (error) {
@@ -21,7 +28,7 @@ class CatalogItemRouter {
 
     async updateCatalogItem(req, res, next) {
         try {
-            const updatedCatalogItem = await CatalogItem.findByIdAndUpdate(
+            const updatedCatalogItem = await CatalogItemController.editItem(
                 req.params.id,
                 req.body,
                 { new: true }
@@ -36,8 +43,8 @@ class CatalogItemRouter {
     }
 
     async deleteCatalogItem(req, res, next) {
-        try {
-            const deletedCatalogItem = await CatalogItem.findByIdAndDelete(req.params.id);
+        try { 
+            const deletedCatalogItem = await CatalogItemController.removeItem(req.params.id);
             if (!deletedCatalogItem) {
                 return res.sendStatus(404);
             }
@@ -45,6 +52,13 @@ class CatalogItemRouter {
         } catch (error) {
             next(error);
         }
+    }
+
+    initializeRoutes() {
+        this.router.get('/', this.getCatalogItems);
+        this.router.post('/', this.addCatalogItem);
+        this.router.put('/:id', this.updateCatalogItem);
+        this.router.delete('/:id', this.deleteCatalogItem);
     }
 }
 

@@ -1,5 +1,5 @@
 exports.RoutePaths = Object.freeze({
-    CATEGORIES: '/catalog-items',
-    CATALOG_ITEMS: '/categories',
+    CATALOG_ITEMS: '/catalog-items',
+    CATEGORIES: '/categories',
     USERS: '/users',
 });

@@ -1,5 +1,4 @@
 const express = require('express');
-const cookieParser = require('cookie-parser');
 const config = require('./src/halpers/configLoader');
 const db = require('./src/halpers/database');
 const routes = require('./src/routes/index');
@@ -11,13 +10,12 @@ class App {
         this.port = process.env.PORT || config.www.port;
         this.initMiddlewares();
         this.initRoutes();
-        this.initErrorHandlers();
+        // this.initErrorHandlers();
     }
 
     initMiddlewares() {
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
-        this.app.use(cookieParser());
     }
 
     initRoutes() {
@@ -36,7 +34,7 @@ class App {
         if (this.app.get('env') === 'development') {
             this.app.use((err, req, res, next) => {
                 res.status(err.status || 500);
-                res.render('error', {
+                res.send('error', {
                     message: err.message,
                     error: err
                 });
@@ -44,7 +42,7 @@ class App {
         } else {
             this.app.use((err, req, res, next) => {
                 res.status(err.status || 500);
-                res.render('error', {
+                res.send('error', {
                     message: err.message,
                     error: {}
                 });
@@ -57,7 +55,7 @@ class App {
     }
 
     start() {
-        // this.initDatabase();
+        this.initDatabase();
         this.app.listen(this.port, (err) => {
             if (err) {
                 console.error(err);

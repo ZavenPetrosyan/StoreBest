@@ -1,4 +1,4 @@
-const catalogItemsRouter = require('./catalog');
+const catalogItemsRouter = require('./catalogItems');
 const categoryRouter = require('./category');
 const userRouter = require('./user');
 
