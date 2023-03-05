@@ -1,22 +1,21 @@
-const { Category } = require('../models/schemas/category.schema');
+const { CatalogItem } = require('../models/schemas/catalogItem.schema');
 
 class CatalogItemController {
     static async listItems() {
         try {
-            const categories = await Category.find({}).lean();
+            const categories = await CatalogItem.find({}).lean();
             if (categories.length === 0) {
                 throw new Error('No categories found!');
             }
             return categories;
         } catch (error) {
             console.error(error);
-            throw new Error('Failed to fetch categories!');
         }
     }
 
     static async addItem(body) {
         try {
-            const newCategory = new Category(body);
+            const newCategory = new CatalogItem(body);
             const savedCategory = await newCategory.save();
             if (!savedCategory) {
                 throw new Error('Failed to save category!');
@@ -24,37 +23,34 @@ class CatalogItemController {
             return savedCategory;
         } catch (error) {
             console.error(error);
-            throw new Error('Failed to add category!');
         }
     }
 
     static async editItem(categoryId, data) {
         try {
-            const updatedCategory = await Category.findByIdAndUpdate(
+            const updatedCategory = await CatalogItem.findByIdAndUpdate(
                 categoryId,
                 data,
                 { new: true }
             );
             if (!updatedCategory) {
-                throw new Error('Failed to update category!');
+                throw new Error('Failed to update item!');
             }
             return updatedCategory;
         } catch (error) {
             console.error(error);
-            throw new Error('Failed to update category!');
         }
     }
 
     static async removeItem(categoryId) {
         try {
-            const deletedCategory = await Category.findByIdAndDelete(categoryId);
+            const deletedCategory = await CatalogItem.findByIdAndDelete(categoryId);
             if (!deletedCategory) {
-                throw new Error('Failed to delete category!');
+                throw new Error('Failed to delete item!');
             }
             return deletedCategory;
         } catch (error) {
             console.error(error);
-            throw new Error('Failed to delete category!');
         }
     }
 }

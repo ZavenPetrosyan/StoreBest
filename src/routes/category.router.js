@@ -1,5 +1,6 @@
 const express = require('express');
 const CategoryController = require('../controllers/category.controller');
+const validateParams = require('../halpers/validateParams');
 
 class CategoryRouter {
     constructor() {
@@ -51,11 +52,10 @@ class CategoryRouter {
 
     initializeRoutes() {
         this.router.get('/', this.listCategories.bind(this));
-        this.router.post('/', this.addCategory.bind(this));
-        this.router.put('/:id', this.editCategory.bind(this));
+        this.router.post('/', validateParams(['name'], []), this.addCategory.bind(this));
+        this.router.put('/:id', validateParams([], ['name']), this.editCategory.bind(this));
         this.router.delete('/:id', this.removeCategory.bind(this));
     }
-
 }
 
-module.exports = CategoryRouter;
+module.exports = new CategoryRouter().router;

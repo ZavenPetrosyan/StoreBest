@@ -1,15 +1,16 @@
 const express = require('express');
 const CatalogItemController = require('../controllers/catalogItem.controller');
+const validateParams = require('../halpers/validateParams');
 
 class CatalogItemRouter {
     constructor() {
         this.router = express.Router();
         this.initializeRoutes();
     }
-    
+
     async getCatalogItems(req, res, next) {
         try {
-            const result = await CatalogItemController.listItems()
+            const result = await CatalogItemController.listItems();
             res.status(201).json(result);
         } catch (error) {
             next(error);
@@ -18,9 +19,8 @@ class CatalogItemRouter {
 
     async addCatalogItem(req, res, next) {
         try {
-            const catalogItem = await CatalogItemController.addItem();
-            const savedCatalogItem = await catalogItem.save();
-            res.status(201).json(savedCatalogItem);
+            const catalogItem = await CatalogItemController.addItem(req.body);
+            res.status(201).json(catalogItem);
         } catch (error) {
             next(error);
         }
@@ -33,9 +33,6 @@ class CatalogItemRouter {
                 req.body,
                 { new: true }
             );
-            if (!updatedCatalogItem) {
-                return res.sendStatus(404);
-            }
             res.json(updatedCatalogItem);
         } catch (error) {
             next(error);
@@ -43,12 +40,9 @@ class CatalogItemRouter {
     }
 
     async deleteCatalogItem(req, res, next) {
-        try { 
+        try {
             const deletedCatalogItem = await CatalogItemController.removeItem(req.params.id);
-            if (!deletedCatalogItem) {
-                return res.sendStatus(404);
-            }
-            res.sendStatus(204);
+            res.sendStatus(204, deletedCatalogItem);
         } catch (error) {
             next(error);
         }
@@ -56,8 +50,22 @@ class CatalogItemRouter {
 
     initializeRoutes() {
         this.router.get('/', this.getCatalogItems);
-        this.router.post('/', this.addCatalogItem);
-        this.router.put('/:id', this.updateCatalogItem);
+        this.router.post(
+            '/',
+            validateParams(
+                ['name', 'description', 'currency', 'price', 'category'],
+                ['tags', 'imageUrls', 'avaliableCount']
+            ),
+            this.addCatalogItem
+        );
+        this.router.put(
+            '/:id',
+            validateParams(
+                [],
+                ['name', 'description', 'currency', 'price', 'category', 'tags', 'imageUrls', 'avaliableCount']
+            ),
+            this.updateCatalogItem
+        );
         this.router.delete('/:id', this.deleteCatalogItem);
     }
 }

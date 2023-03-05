@@ -1,5 +1,6 @@
 const express = require('express');
-const { UserModel: User } = require('../models/user.model');
+const UserController = require('../controllers/user.controller');
+const validateParams = require('../halpers/validateParams');
 
 class UserRouter {
     constructor() {
@@ -8,13 +9,9 @@ class UserRouter {
     }
 
     async signUp(req, res) {
-        const { username, password } = req.body;
-        const user = new User(username, password);
-
         try {
-            await user.register();
-            const token = await user.login();
-            res.status(201).send({ token });
+            const user = await UserController.signUp(req.body);
+            res.status(201).send(user);
         } catch (error) {
             console.error(error);
             res.status(500).send('An error occurred while creating user');
@@ -22,24 +19,8 @@ class UserRouter {
     }
 
     async signIn(req, res) {
-        const { username, password } = req.body;
-        const user = new User(username, password);
-
         try {
-            const token = await user.login();
-            res.status(200).send({ token });
-        } catch (error) {
-            console.error(error);
-            res.status(401).send('Incorrect username or password');
-        }
-    }
-
-    async searchItem(req, res) {
-        const { username, password } = req.body;
-        const user = new User(username, password);
-
-        try {
-            const token = await user.login();
+            const token = await UserController.signIn(req.body);
             res.status(200).send({ token });
         } catch (error) {
             console.error(error);
@@ -48,8 +29,14 @@ class UserRouter {
     }
 
     initializeRoutes() {
-        this.router.post('/signUp', this.signUp);
-        this.router.put('/signIn', this.signIn);
+        this.router.post('/signup', validateParams(
+            ['name', 'email', 'password'],
+            ['isAdmin', 'userName']
+        ), this.signUp.bind(this));
+        this.router.put('/signin', validateParams(
+            ['username', 'password'],
+            []
+        ), this.signIn.bind(this));
     }
 }
 

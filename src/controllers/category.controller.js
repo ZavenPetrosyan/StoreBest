@@ -10,7 +10,6 @@ class CategoryController {
             return categories;
         } catch (error) {
             console.error(error);
-            throw new Error('Failed to fetch categories!');
         }
     }
 
@@ -24,7 +23,6 @@ class CategoryController {
             return savedCategory;
         } catch (error) {
             console.error(error);
-            throw new Error('Failed to add category!');
         }
     }
 
@@ -41,7 +39,6 @@ class CategoryController {
             return updatedCategory;
         } catch (error) {
             console.error(error);
-            throw new Error('Failed to update category!');
         }
     }
 
@@ -54,7 +51,6 @@ class CategoryController {
             return deletedCategory;
         } catch (error) {
             console.error(error);
-            throw new Error('Failed to delete category!');
         }
     }
 }

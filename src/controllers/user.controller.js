@@ -1,37 +1,27 @@
-const User = require('./user');
+const { UserModel: User } = require('../models/user.model');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+const Config = require('../halpers/configLoader');
 
 class UserController {
-    static async signUp(req, res) {
-        const { username, password } = req.body;
-        const user = new User(username, password);
-
-        try {
-            await user.register();
-            const token = await user.login();
-            res.status(201).send({ token });
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('An error occurred while creating user');
-        }
+    static async signUp(body) {
+        const { name, userName, email, password, isAdmin } = body;
+        const user = new User(userName, password, email, name, isAdmin);
+        return user.register();
     }
 
-    static async signIn(req, res) {
-        const { username, password } = req.body;
-        const user = new User(username, password);
+    static async signIn(body) {
+        const { username, password } = body;
+        const user = await User.getByUsername(username);
+        const isPasswordValid = bcrypt.compareSync(password, user.password);
 
-        try {
-            const token = await user.login();
-            res.status(200).send({ token });
-        } catch (error) {
-            console.error(error);
-            res.status(401).send('Incorrect username or password');
+        if (!isPasswordValid) {
+            return res.status(401).send('Invalid username or password');
         }
-    }
 
-    static async search(req, res) {
-        const { name, tags, description } = req.query;
-        const products = await Product.search(name, tags, description);
-        res.status(200).send({ products });
+        const token = jwt.sign({ id: user.id, isAdmin: user.isAdmin }, Config.secretKey);
+        return token;
     }
 }
 
