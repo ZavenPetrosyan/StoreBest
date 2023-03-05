@@ -1,9 +1,9 @@
-const { Category } = require('../models/schemas/category.schema');
+const { CatalogItem } = require('../models/schemas/catalogItem.schema');
 
-class CategoryController {
-    static async listCategories() {
+class CatalogItemService {
+    static async listItems() {
         try {
-            const categories = await Category.find({}).lean();
+            const categories = await CatalogItem.find({}).lean();
             if (categories.length === 0) {
                 throw new Error('No categories found!');
             }
@@ -13,9 +13,9 @@ class CategoryController {
         }
     }
 
-    static async addCategory(body) {
+    static async addItem(body) {
         try {
-            const newCategory = new Category(body);
+            const newCategory = new CatalogItem(body);
             const savedCategory = await newCategory.save();
             if (!savedCategory) {
                 throw new Error('Failed to save category!');
@@ -26,15 +26,15 @@ class CategoryController {
         }
     }
 
-    static async editCategory(categoryId, data) {
+    static async editItem(categoryId, data) {
         try {
-            const updatedCategory = await Category.findByIdAndUpdate(
+            const updatedCategory = await CatalogItem.findByIdAndUpdate(
                 categoryId,
                 data,
                 { new: true }
             );
             if (!updatedCategory) {
-                throw new Error('Failed to update category!');
+                throw new Error('Failed to update item!');
             }
             return updatedCategory;
         } catch (error) {
@@ -42,11 +42,11 @@ class CategoryController {
         }
     }
 
-    static async removeCategory(categoryId) {
+    static async removeItem(categoryId) {
         try {
-            const deletedCategory = await Category.findByIdAndDelete(categoryId);
+            const deletedCategory = await CatalogItem.findByIdAndDelete(categoryId);
             if (!deletedCategory) {
-                throw new Error('Failed to delete category!');
+                throw new Error('Failed to delete item!');
             }
             return deletedCategory;
         } catch (error) {
@@ -55,4 +55,4 @@ class CategoryController {
     }
 }
 
-module.exports = CategoryController;
+module.exports = CatalogItemService;

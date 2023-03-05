@@ -1,8 +1,9 @@
 const express = require('express');
-const config = require('./src/halpers/configLoader');
+const config = require('./src/utils/configLoader');
 const db = require('./src/halpers/database');
-const routes = require('./src/routes/index');
-const { RoutePaths } = require('./src/halpers/routesPaths.enum');
+
+const { itemCategoryRouter, catalogItemsRouter, userRouter } = require('./src/routes');
+const { RoutePaths } = require('./src/utils/routesPaths.enum');
 
 class App {
     constructor() {
@@ -19,20 +20,20 @@ class App {
     }
 
     initRoutes() {
-        this.app.use(RoutePaths.CATALOG_ITEMS, routes.catalogItemsRouter);
-        this.app.use(RoutePaths.CATEGORIES, routes.categoryRouter);
-        this.app.use(RoutePaths.USERS, routes.userRouter);
+        this.app.use(RoutePaths.CATALOG_ITEMS, catalogItemsRouter);
+        this.app.use(RoutePaths.CATEGORIES, itemCategoryRouter);
+        this.app.use(RoutePaths.USERS, userRouter);
     }
 
     initErrorHandlers() {
-        this.app.use((req, res, next) => {
+        this.app.use((_req, _res, next) => {
             const err = new Error('Not Found');
             err.status = 404;
             next(err);
         });
 
         if (this.app.get('env') === 'development') {
-            this.app.use((err, req, res, next) => {
+            this.app.use((err, _req, res, _next) => {
                 res.status(err.status || 500);
                 res.send('error', {
                     message: err.message,
@@ -40,7 +41,7 @@ class App {
                 });
             });
         } else {
-            this.app.use((err, req, res, next) => {
+            this.app.use((err, _req, res, _next) => {
                 res.status(err.status || 500);
                 res.send('error', {
                     message: err.message,
@@ -70,3 +71,4 @@ const app = new App();
 app.start();
 
 module.exports = app;
+

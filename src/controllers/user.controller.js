@@ -1,29 +1,25 @@
-const { UserModel: User } = require('../models/user.model');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-
-const Config = require('../halpers/configLoader');
+const UserService =  require('../services');
 
 class UserController {
-    static async signUp(body) {
-        const { name, userName, email, password, isAdmin } = body;
-        const user = new User(userName, password, email, name, isAdmin);
-        return user.register();
+    async signUp(req, res) {
+        try {
+            const user = await UserService.signUp(req.body);
+            res.status(201).send(user);
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('An error occurred while creating user');
+        }
     }
 
-    static async signIn(body) {
-        const { username, password } = body;
-        const user = await User.getByUsername(username);
-        const isPasswordValid = bcrypt.compareSync(password, user.password);
-
-        if (!isPasswordValid) {
-            return res.status(401).send('Invalid username or password');
+    async signIn(req, res) {
+        try {
+            const token = await UserService.signIn(req.body);
+            res.status(200).send({ token });
+        } catch (error) {
+            console.error(error);
+            res.status(401).send('Incorrect username or password');
         }
-
-        const token = jwt.sign({ id: user.id, isAdmin: user.isAdmin }, Config.secretKey);
-        return token;
     }
 }
 
 module.exports = UserController;
-

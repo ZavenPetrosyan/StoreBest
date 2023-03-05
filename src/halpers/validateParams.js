@@ -1,38 +1,16 @@
-function validateParams(requiredBodyParams, optionalBodyParams) {
-    return function (req, res, next) {
-        const unexpectedParams = Object.keys(req.body).filter(param => ![
-            ...requiredBodyParams,
-            ...optionalBodyParams
-        ].includes(param));
-
-        if (unexpectedParams.length > 0) {
-            return res.status(400).send(`Unexpected parameter(s) found: ${unexpectedParams.join(', ')}`);
-        }
-
+function validateParams(requiredParams, optionalParams) {
+    return (req, res, next) => {
         // Check for required body parameters
-        if (requiredBodyParams.length) {
-            for (const param of requiredBodyParams) {
-                if (!req.body[param]) {
-                    return res.status(400).send(`Body parameter ${param} is required`);
-                }
-            }
+        const missingParams = requiredParams.filter((param) => !(param in req.body));
+        if (missingParams.length > 0) {
+            return res.status(400).json({ message: `Missing required parameter(s): ${missingParams.join(', ')}` });
         }
-
-        // Extract optional body parameters
-        const optional = {};
-        if (optionalBodyParams.length) {
-            for (const param of optionalBodyParams) {
-                if (req.body[param]) {
-                    optional[param] = req.body[param];
-                }
-            }
+        // Check for unexpected body parameters
+        const unexpectedParams = Object.keys(req.body).filter((param) => !requiredParams.includes(param) && !optionalParams.includes(param));
+        if (unexpectedParams.length > 0) {
+            return res.status(400).json({ message: `Unexpected parameter(s): ${unexpectedParams.join(', ')}` });
         }
-
-        // Add optional parameters to request object
-        req.optional = optional;
-
-        // Call next middleware
-        return next();
+        next();
     };
 }
 

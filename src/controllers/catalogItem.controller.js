@@ -1,58 +1,47 @@
-const { CatalogItem } = require('../models/schemas/catalogItem.schema');
+const { CatalogItemService } = require('../services');
 
-class CatalogItemController {
-    static async listItems() {
+class CatalogItemsController {
+    async getCatalogItems(req, res, next) { 
         try {
-            const categories = await CatalogItem.find({}).lean();
-            if (categories.length === 0) {
-                throw new Error('No categories found!');
-            }
-            return categories;
+            const result = await CatalogItemService.listItems();
+            res.status(201).json(result);
         } catch (error) {
-            console.error(error);
+            next(error);
         }
     }
 
-    static async addItem(body) {
+    async addCatalogItem(req, res, next) {
         try {
-            const newCategory = new CatalogItem(body);
-            const savedCategory = await newCategory.save();
-            if (!savedCategory) {
-                throw new Error('Failed to save category!');
-            }
-            return savedCategory;
+            const catalogItem = await CatalogItemService.addItem(req.body);
+            res.status(201).json(catalogItem);
         } catch (error) {
-            console.error(error);
+            next(error);
         }
     }
 
-    static async editItem(categoryId, data) {
+    async updateCatalogItem(req, res, next) {
         try {
-            const updatedCategory = await CatalogItem.findByIdAndUpdate(
-                categoryId,
-                data,
+            const { id } = req.params;
+            const updatedCatalogItem = await CatalogItemService.editItem(
+                id,
+                req.body,
                 { new: true }
             );
-            if (!updatedCategory) {
-                throw new Error('Failed to update item!');
-            }
-            return updatedCategory;
+            res.json(updatedCatalogItem);
         } catch (error) {
-            console.error(error);
+            next(error);
         }
     }
 
-    static async removeItem(categoryId) {
+    async deleteCatalogItem(req, res, next) {
         try {
-            const deletedCategory = await CatalogItem.findByIdAndDelete(categoryId);
-            if (!deletedCategory) {
-                throw new Error('Failed to delete item!');
-            }
-            return deletedCategory;
+            const { id } = req.params;
+            const deletedCatalogItem = await CatalogItemService.removeItem(id);
+            res.sendStatus(204, deletedCatalogItem);
         } catch (error) {
-            console.error(error);
+            next(error);
         }
     }
 }
 
-module.exports = CatalogItemController;
+module.exports = CatalogItemsController;

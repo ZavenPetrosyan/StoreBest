@@ -1,4 +1,4 @@
-const logger = require('./logger');
+const logger = require('../halpers/logger');
 
 let env = process.env.NODE_ENV;
 
