@@ -6,7 +6,7 @@ class CatalogItemService {
     static async listItems() {
         const categories = await CatalogItem.find({}).lean();
         if (categories.length === 0) {
-            throw Exception.newException(StatusCodes.BAD_REQUEST, 'No categories found!');
+            throw Exception.newException(StatusCodes.BAD_REQUEST, 'No catalog-items found!');
         }
         return categories;
     }
@@ -15,7 +15,7 @@ class CatalogItemService {
         const newCategory = new CatalogItem(body);
         const savedCategory = await newCategory.save();
         if (!savedCategory) {
-            throw Exception.newException(StatusCodes.BAD_REQUEST, 'Failed to save category!');
+            throw Exception.newException(StatusCodes.BAD_REQUEST, 'Failed to save catalog-items!');
         }
         return savedCategory;
 
@@ -28,7 +28,7 @@ class CatalogItemService {
             { new: true }
         );
         if (!updatedCategory) {
-            throw Exception.newException(StatusCodes.BAD_REQUEST, 'Failed to update item!');
+            throw Exception.newException(StatusCodes.BAD_REQUEST, 'Failed to update catalog-items!');
         }
         return updatedCategory;
 
@@ -37,7 +37,7 @@ class CatalogItemService {
     static async removeItem(categoryId) {
         const deletedCategory = await CatalogItem.findByIdAndDelete(categoryId);
         if (!deletedCategory) {
-            throw Exception.newException(StatusCodes.BAD_REQUEST, 'Failed to delete item!');
+            throw Exception.newException(StatusCodes.BAD_REQUEST, 'Failed to delete catalog-items!');
         }
         return deletedCategory;
     }
@@ -56,7 +56,7 @@ class CatalogItemService {
         }
         const searchResults = await CatalogItem.find(filter).lean();
         if (searchResults.length === 0) {
-            throw Exception.newException(StatusCodes.NOT_FOUND, 'No items found!');
+            throw Exception.newException(StatusCodes.NOT_FOUND, 'No catalog-items found!');
         }
         return searchResults;
     }

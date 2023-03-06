@@ -38,4 +38,3 @@ class CatalogItemsController {
 }
 
 module.exports = CatalogItemsController;
-
