@@ -29,5 +29,5 @@ services:
       - store-network
 
 networks:
-  nodeapp-network:
+  store-network:
     driver: bridge
