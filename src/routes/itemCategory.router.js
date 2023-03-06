@@ -1,9 +1,10 @@
-const validateParams = require('../halpers/validateParams');
+const validateParams = require('../helpers/validateParams');
 const BaseRouter = require('../utils/baseRouter');
 const checkAuth = require('../middlewares/authRequest');
 const adminRequest = require('../middlewares/adminRequest');
 
 const { ItemCategoryController } = require('../controllers');
+const { WrapRoute } = require('../utils/responseUtils');
 
 class ItemCategoryRouter extends BaseRouter {
     constructor(controller) {
@@ -13,10 +14,10 @@ class ItemCategoryRouter extends BaseRouter {
     }
 
     initializeRoutes() {
-        this.get('/', this.controller.listCategories);
-        this.post('/', checkAuth, adminRequest, validateParams(['name'], []), this.controller.addCategory);
-        this.put('/:id', checkAuth, adminRequest, validateParams([], ['name']), this.controller.editCategory);
-        this.delete('/:id', checkAuth, adminRequest, this.controller.removeCategory);
+        this.get('/', WrapRoute(this.controller.listCategories));
+        this.post('/', checkAuth, adminRequest, validateParams(['name'], []), WrapRoute(this.controller.addCategory));
+        this.put('/:id', checkAuth, adminRequest, validateParams([], ['name']), WrapRoute(this.controller.editCategory));
+        this.delete('/:id', checkAuth, adminRequest, WrapRoute(this.controller.removeCategory));
     }
 }
 
@@ -24,3 +25,4 @@ const itemCategoryController = new ItemCategoryController();
 const itemCategoryRouter = new ItemCategoryRouter(itemCategoryController);
 
 module.exports = itemCategoryRouter.router;
+

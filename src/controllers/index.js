@@ -6,4 +6,6 @@ module.exports = {
     ItemCategoryController,
     CatalogItemsController,
     UserController
-}
+};
+
+

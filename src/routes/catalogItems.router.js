@@ -1,8 +1,9 @@
-const validateParams = require('../halpers/validateParams')
+const validateParams = require('../helpers/validateParams')
 const checkAuth = require('../middlewares/authRequest');
 const adminRequest = require('../middlewares/adminRequest');
 const BaseRouter = require('../utils/baseRouter');
 const { CatalogItemsController } = require('../controllers');
+const { WrapRoute } = require('../utils/responseUtils');
 
 class CatalogItemRouter extends BaseRouter {
     constructor(controller) {
@@ -12,19 +13,21 @@ class CatalogItemRouter extends BaseRouter {
     }
 
     initializeRoutes() {
-        this.get('/', this.controller.getCatalogItems);
-        this.delete('/:id', checkAuth, adminRequest, this.controller.deleteCatalogItem);
+        this.get('/', WrapRoute(this.controller.getCatalogItems));
+        this.get('/:categoryId', checkAuth, WrapRoute(this.controller.getCatalogItemsByCategory));
+        this.get('/search', checkAuth, WrapRoute(this.controller.searchCatalogItems));
+        this.delete('/:id', checkAuth, adminRequest, WrapRoute(this.controller.deleteCatalogItem));
         this.post('/', checkAuth, adminRequest, validateParams(
             ['name', 'description', 'currency', 'price', 'category'],
             ['tags', 'imageUrls', 'avaliableCount']
         ),
-            this.controller.addCatalogItem
+            WrapRoute(this.controller.addCatalogItem)
         );
         this.put('/:id', checkAuth, adminRequest, validateParams(
             [],
             ['name', 'description', 'currency', 'price', 'category', 'tags', 'imageUrls', 'avaliableCount']
         ),
-            this.controller.updateCatalogItem
+            WrapRoute(this.controller.updateCatalogItem)
         );
     }
 }

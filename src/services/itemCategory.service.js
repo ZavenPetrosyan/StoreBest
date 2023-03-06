@@ -1,57 +1,43 @@
+const Exception = require('../helpers/exception');
 const { Category } = require('../models/schemas/category.schema');
+const { StatusCodes } = require('../utils/responseUtils');
 
 class ItemCategoryService {
     static async listCategories() {
-        try {
-            const categories = await Category.find({}).lean();
-            if (categories.length === 0) {
-                throw new Error('No categories found!');
-            }
-            return categories;
-        } catch (error) {
-            console.error(error);
+        const categories = await Category.find({}).lean();
+        if (categories.length === 0) {
+            throw Exception.newException(StatusCodes.NOT_FOUND, 'No categories found!');
         }
+        return categories;
     }
 
     static async addCategory(body) {
-        try {
-            const newCategory = new Category(body);
-            const savedCategory = await newCategory.save();
-            if (!savedCategory) {
-                throw new Error('Failed to save category!');
-            }
-            return savedCategory;
-        } catch (error) {
-            console.error(error);
+        const newCategory = new Category(body);
+        const savedCategory = await newCategory.save();
+        if (!savedCategory) {
+            throw Exception.newException(StatusCodes.BAD_REQUEST, 'Failed to save category!');
         }
+        return savedCategory;
     }
 
     static async editCategory(categoryId, data) {
-        try {
-            const updatedCategory = await Category.findByIdAndUpdate(
-                categoryId,
-                data,
-                { new: true }
-            );
-            if (!updatedCategory) {
-                throw new Error('Failed to update category!');
-            }
-            return updatedCategory;
-        } catch (error) {
-            console.error(error);
+        const updatedCategory = await Category.findByIdAndUpdate(
+            categoryId,
+            data,
+            { new: true }
+        );
+        if (!updatedCategory) {
+            throw Exception.newException(StatusCodes.BAD_REQUEST, 'Failed to update category!');
         }
+        return updatedCategory;
     }
 
     static async removeCategory(categoryId) {
-        try {
-            const deletedCategory = await Category.findByIdAndDelete(categoryId);
-            if (!deletedCategory) {
-                throw new Error('Failed to delete category!');
-            }
-            return deletedCategory;
-        } catch (error) {
-            console.error(error);
+        const deletedCategory = await Category.findByIdAndDelete(categoryId);
+        if (!deletedCategory) {
+            throw Exception.newException(StatusCodes.BAD_REQUEST, 'Failed to delete category!');
         }
+        return deletedCategory;
     }
 }
 

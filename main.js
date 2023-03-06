@@ -1,9 +1,10 @@
 const express = require('express');
 const config = require('./src/utils/configLoader');
-const db = require('./src/halpers/database');
+const db = require('./src/helpers/database');
 
 const { itemCategoryRouter, catalogItemsRouter, userRouter } = require('./src/routes');
-const { RoutePaths } = require('./src/utils/routesPaths.enum');
+const { BasePaths } = require('./src/utils/basePaths.enum');
+const { handleError } = require('./src/helpers/handleError');
 
 class App {
     constructor() {
@@ -11,7 +12,7 @@ class App {
         this.port = process.env.PORT || config.www.port;
         this.initMiddlewares();
         this.initRoutes();
-        // this.initErrorHandlers();
+        this.initErrorHandlers();
     }
 
     initMiddlewares() {
@@ -20,9 +21,9 @@ class App {
     }
 
     initRoutes() {
-        this.app.use(RoutePaths.CATALOG_ITEMS, catalogItemsRouter);
-        this.app.use(RoutePaths.CATEGORIES, itemCategoryRouter);
-        this.app.use(RoutePaths.USERS, userRouter);
+        this.app.use(BasePaths.CATALOG_ITEMS, catalogItemsRouter);
+        this.app.use(BasePaths.CATEGORIES, itemCategoryRouter);
+        this.app.use(BasePaths.USERS, userRouter);
     }
 
     initErrorHandlers() {
@@ -31,24 +32,10 @@ class App {
             err.status = 404;
             next(err);
         });
-
-        if (this.app.get('env') === 'development') {
-            this.app.use((err, _req, res, _next) => {
-                res.status(err.status || 500);
-                res.send('error', {
-                    message: err.message,
-                    error: err
-                });
-            });
-        } else {
-            this.app.use((err, _req, res, _next) => {
-                res.status(err.status || 500);
-                res.send('error', {
-                    message: err.message,
-                    error: {}
-                });
-            });
-        }
+        this.app.use((err, req, res, next) => {
+            handleError(req, res, err, err.code);
+            next();
+        });
     }
 
     initDatabase() {

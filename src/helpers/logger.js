@@ -1,8 +1,8 @@
 class Logger {
     constructor() {
-        this.log = (msg) => {
+        this.log = (msg, text, data) => {
             if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-                console.log(msg);
+                console.log(msg, text, data);
             }
         }
     }

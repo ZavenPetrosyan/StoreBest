@@ -1,14 +1,18 @@
-const { UserModel: User } = require('../models/user.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const Config = require('../utils/configLoader');
+const Exception = require('../helpers/exception');
+const { StatusCodes } = require('../utils/responseUtils');
+const { UserModel: User } = require('../models/user.model');
 
 class UserService {
     static async signUp(body) {
-        const { name, userName, email, password, isAdmin } = body;
-        const user = new User(userName, password, email, name, isAdmin);
-        return user.register();
+        const {
+            name, userName, email, password, isAdmin
+        } = body;
+        const userEntity = new User(userName, password, email, name, isAdmin);
+        return userEntity.register();
     }
 
     static async signIn(body) {
@@ -17,7 +21,7 @@ class UserService {
         const isPasswordValid = bcrypt.compareSync(password, user.password);
 
         if (!isPasswordValid) {
-            return res.status(401).send('Invalid username or password');
+            throw Exception.newException(StatusCodes.UNAUTHORIZED, 'Invalid username or password!');
         }
 
         const token = jwt.sign({ id: user.id, isAdmin: user.isAdmin }, Config.secretKey);
@@ -26,4 +30,3 @@ class UserService {
 }
 
 module.exports = UserService;
-

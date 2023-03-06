@@ -1,23 +1,24 @@
-const UserService =  require('../services');
+const Exception = require('../helpers/exception');
+const logger = require('../helpers/logger');
+const { UserService } = require('../services');
+const { StatusCodes } = require('../utils/responseUtils');
 
 class UserController {
-    async signUp(req, res) {
+    async signUp(req) {
         try {
-            const user = await UserService.signUp(req.body);
-            res.status(201).send(user);
+            return UserService.signUp(req.body);
         } catch (error) {
-            console.error(error);
-            res.status(500).send('An error occurred while creating user');
+            logger.log(error);
+            throw Exception.newException(StatusCodes.INTERNAL_SERVER_ERROR, 'An error occurred while creating user');
         }
     }
 
-    async signIn(req, res) {
+    async signIn(req) {
         try {
-            const token = await UserService.signIn(req.body);
-            res.status(200).send({ token });
+            return UserService.signIn(req.body);
         } catch (error) {
-            console.error(error);
-            res.status(401).send('Incorrect username or password');
+            logger.log(error);
+            throw Exception.newException(StatusCodes.UNAUTHORIZED, 'Incorrect username or password!');
         }
     }
 }

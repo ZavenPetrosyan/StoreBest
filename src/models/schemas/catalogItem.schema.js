@@ -8,7 +8,7 @@ const catalogItemSchema = new mongoose.Schema({
     price: { type: Number, required: true },
     tags: { type: Array },
     imageUrls: { type: Array },
-    avaliable_count: { type: Number, default: 0 },
+    avaliableCount: { type: Number, default: 0 },
 });
 const CatalogItem = mongoose.model('CatalogItem', catalogItemSchema);
 

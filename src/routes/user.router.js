@@ -1,6 +1,7 @@
-const validateParams = require('../halpers/validateParams');
+const validateParams = require('../helpers/validateParams');
 const BaseRouter = require('../utils/baseRouter');
 const { UserController } = require('../controllers');
+const { WrapRoute } = require('../utils/responseUtils');
 
 class UserRouter extends BaseRouter {
     constructor(controller) {
@@ -10,8 +11,8 @@ class UserRouter extends BaseRouter {
     }
 
     initializeRoutes() {
-        this.post('/sign-up', validateParams(['name', 'email', 'password'], ['isAdmin', 'userName']), this.controller.signUp);
-        this.put('/sign-in', validateParams(['username', 'password'], []), this.controller.signIn);
+        this.post('/sign-up', validateParams(['name', 'email', 'password'], ['isAdmin', 'userName']), WrapRoute(this.controller.signUp));
+        this.put('/sign-in', validateParams(['username', 'password'], []), WrapRoute(this.controller.signIn));
     }
 }
 

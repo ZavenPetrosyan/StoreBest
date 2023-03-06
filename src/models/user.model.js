@@ -1,3 +1,5 @@
+const Exception = require('../helpers/exception');
+const { StatusCodes } = require('../utils/responseUtils');
 const { User } = require('./schemas/user.schema');
 
 class UserModel {
@@ -14,21 +16,22 @@ class UserModel {
             const user = new User({
                 userName: this.userName,
                 password: this.password,
+                isAdmin: this.isAdmin,
                 email: this.email,
                 name: this.name,
             });
             return await user.save();
         } catch (error) {
-            throw new Error('Error creating user!');
+            throw Exception.newException(StatusCodes.INTERNAL_SERVER_ERROR, 'Error creating user DB!');
         }
     }
 
     static async getByUsername(username) {
-        const user = await User.findOne({ userName: username });
-        if (!user) {
-            throw new Error('User not found!');
+        try {
+            return await User.findOne({ userName: username });
+        } catch (error) {
+            throw Exception.newException(StatusCodes.INTERNAL_SERVER_ERROR, 'Failed to get user DB!');
         }
-        return user;
     }
 }
 
