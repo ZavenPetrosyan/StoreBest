@@ -14,8 +14,8 @@ class CatalogItemRouter extends BaseRouter {
 
     initializeRoutes() {
         this.get('/', WrapRoute(this.controller.getCatalogItems));
-        this.get('/:categoryId', checkAuth, WrapRoute(this.controller.getCatalogItemsByCategory));
         this.get('/search', checkAuth, WrapRoute(this.controller.searchCatalogItems));
+        this.get('/:categoryId', checkAuth, WrapRoute(this.controller.getCatalogItemsByCategory));
         this.delete('/:id', checkAuth, adminRequest, WrapRoute(this.controller.deleteCatalogItem));
         this.post('/', checkAuth, adminRequest, validateParams(
             ['name', 'description', 'currency', 'price', 'category'],
